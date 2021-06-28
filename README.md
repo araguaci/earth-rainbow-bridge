@@ -1,5 +1,5 @@
 ## giv us more ideias
-Ola pessoas, como vi que a comunidade tem muitas ideias e uma turma empenhada, vamos dar ideias para este projeto, deixa um like e um issue, as melhores ideias terão destaque e serão implementadas com prioridade. Vamos mudar o Planeta, mas antes vamos planejar como vimos nas aulas.
+Ola pessoas, como vi que a comunidade tem muitas ideias e uma turma empenhada, vamos dar ideias para este projeto, deixa um issue, as melhores ideias terão destaque e serão implementadas com prioridade. Vamos mudar o Planeta, mas antes vamos planejar como vimos nas aulas.
 Deixe sua [ideia](https://github.com/araguaci/earth-rainbow-bridge/issues) \o
 
 ## todo
