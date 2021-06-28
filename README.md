@@ -2,10 +2,15 @@
 [ideia](https://github.com/araguaci/earth-rainbow-bridge/issues)
 
 ## todo
+
 -[ ] Meditation Stages
+
 -[ ] Calculate User Kin
+
 -[ ] Earth Ideia for Change
+
 -[ ] Besta Ideias Fist
+
 -[ ] Top 10 Ideias
 
 ## earth-rainbow-bridge
