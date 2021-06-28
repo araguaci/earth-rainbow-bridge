@@ -1,10 +1,12 @@
 ## giv us more ideias
 Hello people, as I saw that the community has many ideas and a committed group, let's give ideas for this project, leave an issue, the best ideas will be highlighted and will be implemented with priority. Let's change the Planet, but first let's plan as we saw in class. 
-👉🏼&nbsp;Leave your [ideia](https://github.com/araguaci/earth-rainbow-bridge/issues)💡&nbsp;✨&nbsp;\o&nbsp;✨ 
+
+💡&nbsp;👉🏼&nbsp;Leave your [ideia](https://github.com/araguaci/earth-rainbow-bridge/issues)✨ 
 
 ## registre sua ideia
 Ola pessoas, como vi que a comunidade tem muitas ideias e uma turma empenhada, vamos dar ideias para este projeto, deixa um issue, as melhores ideias terão destaque e serão implementadas com prioridade. Vamos mudar o Planeta, mas antes vamos planejar como vimos nas aulas.
-👉🏼&nbsp;Deixe sua [ideia](https://github.com/araguaci/earth-rainbow-bridge/issues)💡&nbsp;✨&nbsp;\o&nbsp;✨ 
+
+💡&nbsp;👉🏼&nbsp;Deixe sua [ideia](https://github.com/araguaci/earth-rainbow-bridge/issues)✨ 
 
 ## todo
 - [x] Enviroment
