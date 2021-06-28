@@ -9,7 +9,7 @@
 
 - [ ] Earth Ideia for Change
 
-- [ ] Besta Ideias Fist
+- [ ] Best Ideias First
 
 - [ ] Top 10 Ideias
 
