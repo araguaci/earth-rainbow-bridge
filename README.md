@@ -2,19 +2,19 @@
 [ideia](https://github.com/araguaci/earth-rainbow-bridge/issues)
 
 ## todo
+- [x] Enviroment
+- [ ] Meditation Stages
 
--[ ] Meditation Stages
+- [ ] Calculate User Kin
 
--[ ] Calculate User Kin
+- [ ] Earth Ideia for Change
 
--[ ] Earth Ideia for Change
+- [ ] Besta Ideias Fist
 
--[ ] Besta Ideias Fist
-
--[ ] Top 10 Ideias
+- [ ] Top 10 Ideias
 
 ## earth-rainbow-bridge
-For meditation with Tzolkin Noosfera see: (GaiaNoosfera)[http://gaia.artesdosul.com/]
+For meditation with Tzolkin Noosfera, see Gaia-Noos-fera here: [http://gaia.artesdosul.com/]
 
 ## inspiration 
 A Pen created at CodePen.io. You can find this one at [http://codepen.io/edankwan/pen/emqgpr].
