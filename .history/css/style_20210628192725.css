@@ -95,11 +95,9 @@ a {
   right: 0;
   border: 0;  
 }
-
-.forkme {
+.world-bg > img {
   opacity: 0.6;
 }
-
 .world-bg > iframe {
   margin: 5px;
   background-color: transparent !important;

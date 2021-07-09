@@ -88,19 +88,9 @@ a {
 #stats, .dg {
   display: none;
 }
-.world-bg > a {
-  background-color: transparent !important;
+.world > a {
   position: absolute;
   top: 0;
   right: 0;
-  border: 0;  
-}
-
-.forkme {
-  opacity: 0.6;
-}
-
-.world-bg > iframe {
-  margin: 5px;
-  background-color: transparent !important;
+  border: 0;
 }
