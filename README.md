@@ -10,15 +10,13 @@ Ola pessoas, como vi que a comunidade tem muitas ideias e uma turma empenhada, v
 
 ## todo
 - [x] Enviroment
-- [ ] Meditation Stages
-
-- [ ] Calculate User Kin
-
-- [ ] Earth Ideia for Change
-
-- [ ] Best Ideias First
-
-- [ ] Top 10 Ideias
+- [x] Convert to webapp for next steps:
+  - Meditation Stages
+  - Calculate User Kin
+  - Earth Ideia for Change
+  - Best Ideias First
+  - Top 10 Ideias
+- [new source whit react-tools](https://github.com/araguaci/yo-webapp-earth)
 
 ## earth-rainbow-bridge
 For meditation with Tzolkin Noosfera, see Gaia-Noos-fera here: [http://gaia.artesdosul.com/]
