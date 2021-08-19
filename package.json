@@ -1,0 +1,14 @@
+{
+  "name": "earth-rainbow-bridge",
+  "version": "1.0.0",
+  "description": "meditation on noosfera frequency",
+  "main": "index.js",
+  "repository": "https://github.com/araguaci/earth-rainbow-bridge.git",
+  "author": "araguaci <araguaci@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "changelog": "^1.4.2",
+    "react-native": "^0.64.2",
+    "react-native-share": "^6.2.3"
+  }
+}
