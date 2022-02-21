@@ -11,7 +11,7 @@
     padding-right: 10px;
     cursor: pointer;
     z-index: 2;
-    opacity: 0.6;
+    opacity: 0.4;
     top: 5px;
     left: 5px;
 }
@@ -132,4 +132,39 @@
   opacity: 1;
   transition: .5s;
   transition-delay: .5s;
+}
+
+.play-btn{
+  position: fixed;
+  border: none;
+  background: #fff;
+  color: #292626;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 26px;
+  padding-top: 2.5px;
+  padding-left: 10px;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.4;
+  top: 55px;
+  left: 5px;
+}
+.pause-btn {
+  position: fixed;
+  border: none;
+  background: #fff;
+  color: #292626;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 26px;
+  padding-top: 2.5px;
+  padding-left: 7px;
+  cursor: pointer;
+  z-index: 2;
+  opacity: 0.4;
+  top: 55px;
+  left: 5px; 
 }
