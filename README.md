@@ -1,3 +1,9 @@
+<p align=center>
+			<a href="http://gaia.artesdosul.com/">
+				<img align="center" src="https://img.shields.io/badge/earthrainbowbridge-51338f?logo=javascript&logoColor=fff&style=flat" alt="earth-rainbow-bridge">
+			</a>
+		</p>
+  
 ## giv us more ideias
 Hello people, as I saw that the community has many ideas and a committed group, let's give ideas for this project, leave an issue, the best ideas will be highlighted and will be implemented with priority. Let's change the Planet, but first let's plan as we saw in class. 
 
