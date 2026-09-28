@@ -1,2 +1,11 @@
-node_modules
-.history
+# Logs & Cache
+*.log
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# Temporary / Server files
+cgi-bin/
+.well-known/
