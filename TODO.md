@@ -51,6 +51,10 @@ A comunidade e os guardiões do planeta são convidados a propor novas frequênc
   - [x] Service Worker (`sw.js`) para funcionamento offline em retiros e meditações desconectadas.
 - [x] **Bênção de Gaia:**
   - [x] Modal com oração sagrada e frequências numéricas de Grabovoi do Artes do Sul.
+- [x] **Calibração Visual & Gauges de Cor e Luz:**
+  - [x] 4 Gauges dinâmicos (SVG) com agulha e arco luminoso: Temperatura de Cor (3.000K–9.000K), Intensidade/Saturação (0%–200%), Brilho/Exposição (50%–150%) e Contraste/Nitidez (50%–160%).
+  - [x] Integração simultânea com pós-processamento do Canvas e iluminação/exposição Three.js (WebGL).
+  - [x] Predefinições cósmicas rápidas (*Aurora Dourada, Pleiades Ciano, Noosfera Viva, Equilíbrio Cósmico*), persistência local e restauração com um clique.
 - [x] **Compartilhamento Inteligente:**
   - [x] Web Share API nativa com fallback para cópia rápida com feedback.
 

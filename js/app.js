@@ -23,6 +23,12 @@
     synthGain: null,
     isSynthPlaying: false,
     meditatorsCount: 1440,
+    visualCalibration: {
+      temperature: 0,   // -50 (Frio/Azul) a +50 (Quente/Ouro)
+      saturation: 100,  // 0% a 200%
+      brightness: 100,  // 50% a 150%
+      contrast: 100     // 50% a 160%
+    }
   };
 
   const BACKGROUNDS = [
@@ -103,6 +109,33 @@
   const currentFreqDisplay = document.getElementById('current-freq-display');
   const globalPulseBtn = document.getElementById('btn-global-pulse');
   const meditatorsCountEl = document.getElementById('meditators-count');
+
+  // Elementos do Modal de Calibração & Gauges
+  const gaugeBtn = document.getElementById('btn-gauge');
+  const gaugeModal = document.getElementById('gauge-modal');
+  const closeGaugeBtn = document.getElementById('btn-close-gauge');
+  const resetGaugeBtn = document.getElementById('btn-reset-gauge');
+  const tempSlider = document.getElementById('gauge-temp-slider');
+  const satSlider = document.getElementById('gauge-sat-slider');
+  const briSlider = document.getElementById('gauge-bri-slider');
+  const conSlider = document.getElementById('gauge-con-slider');
+  const tempVal = document.getElementById('gauge-temp-val');
+  const satVal = document.getElementById('gauge-sat-val');
+  const briVal = document.getElementById('gauge-bri-val');
+  const conVal = document.getElementById('gauge-con-val');
+  const tempArc = document.getElementById('gauge-temp-arc');
+  const satArc = document.getElementById('gauge-sat-arc');
+  const briArc = document.getElementById('gauge-bri-arc');
+  const conArc = document.getElementById('gauge-con-arc');
+  const tempNeedle = document.getElementById('gauge-temp-needle');
+  const satNeedle = document.getElementById('gauge-sat-needle');
+  const briNeedle = document.getElementById('gauge-bri-needle');
+  const conNeedle = document.getElementById('gauge-con-needle');
+  const tempState = document.getElementById('gauge-temp-state');
+  const satState = document.getElementById('gauge-sat-state');
+  const briState = document.getElementById('gauge-bri-state');
+  const conState = document.getElementById('gauge-con-state');
+  const presetButtons = document.querySelectorAll('.gauge-preset-btn');
 
   // --- AUDIO API & ANALYSER ---
   let audioCtx = null;
@@ -214,6 +247,7 @@
   // --- THREE.JS WEBGL 3D ENGINE & PONTE ARCO-ÍRIS CIRCUMPOLAR ---
   let scene, camera, renderer, globeMesh, atmosphereMesh, particlesMesh;
   let rainbowBridgeMesh, pulseRingMesh;
+  let ambientLight, sunLight, cyanRimLight;
   let isDragging = false;
   let previousMousePosition = { x: 0, y: 0 };
   let rotationVelocity = { x: 0, y: 0.0015 };
@@ -240,16 +274,20 @@
     });
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    if (THREE.ACESFilmicToneMapping) {
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.0;
+    }
 
     // Iluminação Sagrada Cósmica
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.25);
+    ambientLight = new THREE.AmbientLight(0xffffff, 1.25);
     scene.add(ambientLight);
 
-    const sunLight = new THREE.DirectionalLight(0xfff6e5, 1.4);
+    sunLight = new THREE.DirectionalLight(0xfff6e5, 1.4);
     sunLight.position.set(5, 3, 5);
     scene.add(sunLight);
 
-    const cyanRimLight = new THREE.DirectionalLight(0x5ce1e6, 0.9);
+    cyanRimLight = new THREE.DirectionalLight(0x5ce1e6, 0.9);
     cyanRimLight.position.set(-5, -2, -3);
     scene.add(cyanRimLight);
 
@@ -818,6 +856,152 @@
     }, 2800);
   }
 
+  // --- CALIBRAÇÃO VISUAL & GAUGES DE COR E LUZ ---
+  const ARC_LENGTH = 141.4;
+
+  function loadSavedCalibration() {
+    try {
+      const saved = localStorage.getItem('gaia_visual_calibration');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (typeof parsed.temperature === 'number') state.visualCalibration.temperature = parsed.temperature;
+        if (typeof parsed.saturation === 'number') state.visualCalibration.saturation = parsed.saturation;
+        if (typeof parsed.brightness === 'number') state.visualCalibration.brightness = parsed.brightness;
+        if (typeof parsed.contrast === 'number') state.visualCalibration.contrast = parsed.contrast;
+      }
+    } catch (e) {
+      console.warn('Erro ao carregar calibração visual:', e);
+    }
+  }
+
+  function applyVisualCalibration(save = true) {
+    const { temperature, saturation, brightness, contrast } = state.visualCalibration;
+
+    // 1. Atualizar Canvas CSS Filter
+    let sepiaVal = 0;
+    let hueVal = 0;
+    if (temperature > 0) {
+      sepiaVal = (temperature / 50) * 0.35;
+      hueVal = -(temperature / 50) * 8;
+    } else if (temperature < 0) {
+      hueVal = -(temperature / 50) * 14;
+    }
+
+    const sat = (saturation / 100).toFixed(2);
+    const bri = (brightness / 100).toFixed(2);
+    const con = (contrast / 100).toFixed(2);
+    
+    if (canvas) {
+      canvas.style.filter = `saturate(${sat}) brightness(${bri}) contrast(${con}) sepia(${sepiaVal.toFixed(2)}) hue-rotate(${hueVal.toFixed(1)}deg)`;
+    }
+
+    // 2. Three.js Shaders e Luzes
+    if (typeof THREE !== 'undefined') {
+      if (renderer && renderer.toneMappingExposure !== undefined) {
+        renderer.toneMappingExposure = parseFloat(bri);
+      }
+      if (sunLight) {
+        sunLight.intensity = 1.4 * parseFloat(bri);
+        if (temperature > 0) {
+          const t = temperature / 50;
+          sunLight.color.setRGB(1.0, 0.96 - t * 0.12, 0.90 - t * 0.28);
+        } else {
+          const t = -temperature / 50;
+          sunLight.color.setRGB(1.0 - t * 0.22, 0.96 + t * 0.04, 1.0);
+        }
+      }
+      if (ambientLight) {
+        ambientLight.intensity = 1.25 * parseFloat(bri);
+      }
+    }
+
+    // 3. Atualizar Indicadores dos Gauges
+    // Gauge 1: Temperatura (-50 a +50)
+    const pTemp = Math.max(0, Math.min(1, (temperature + 50) / 100));
+    if (tempArc) tempArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pTemp)).toFixed(1);
+    if (tempNeedle) tempNeedle.style.transform = `rotate(${((pTemp - 0.5) * 180).toFixed(1)}deg)`;
+    if (tempSlider && document.activeElement !== tempSlider) tempSlider.value = temperature;
+    if (tempVal) {
+      const kelvin = Math.round(6500 + temperature * 50);
+      tempVal.textContent = `${kelvin} K`;
+    }
+    if (tempState) {
+      tempState.textContent = temperature < -15 ? '❄️ Fria (Azul)' : temperature > 15 ? '☀️ Quente (Ouro)' : '✨ Neutro Cósmico';
+    }
+
+    // Gauge 2: Saturação (0 a 200)
+    const pSat = Math.max(0, Math.min(1, saturation / 200));
+    if (satArc) satArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pSat)).toFixed(1);
+    if (satNeedle) satNeedle.style.transform = `rotate(${((pSat - 0.5) * 180).toFixed(1)}deg)`;
+    if (satSlider && document.activeElement !== satSlider) satSlider.value = saturation;
+    if (satVal) satVal.textContent = `${Math.round(saturation)}%`;
+    if (satState) {
+      satState.textContent = saturation < 25 ? 'Monocromático' : saturation > 140 ? 'Hiper Cósmico' : 'Cores Vivas';
+    }
+
+    // Gauge 3: Brilho (50 a 150)
+    const pBri = Math.max(0, Math.min(1, (brightness - 50) / 100));
+    if (briArc) briArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pBri)).toFixed(1);
+    if (briNeedle) briNeedle.style.transform = `rotate(${((pBri - 0.5) * 180).toFixed(1)}deg)`;
+    if (briSlider && document.activeElement !== briSlider) briSlider.value = brightness;
+    if (briVal) briVal.textContent = `${Math.round(brightness)}%`;
+    if (briState) {
+      briState.textContent = brightness < 80 ? 'Penumbra Cósmica' : brightness > 120 ? 'Radiação Solar' : 'Equilíbrio Óptico';
+    }
+
+    // Gauge 4: Contraste (50 a 160)
+    const pCon = Math.max(0, Math.min(1, (contrast - 50) / 110));
+    if (conArc) conArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pCon)).toFixed(1);
+    if (conNeedle) conNeedle.style.transform = `rotate(${((pCon - 0.5) * 180).toFixed(1)}deg)`;
+    if (conSlider && document.activeElement !== conSlider) conSlider.value = contrast;
+    if (conVal) conVal.textContent = `${Math.round(contrast)}%`;
+    if (conState) {
+      conState.textContent = contrast < 80 ? 'Suave Etéreo' : contrast > 130 ? 'Nitidez Profunda' : 'Definição Suave';
+    }
+
+    // 4. Salvar Persistência
+    if (save) {
+      try {
+        localStorage.setItem('gaia_visual_calibration', JSON.stringify(state.visualCalibration));
+      } catch (e) {}
+    }
+  }
+
+  function setPreset(presetName) {
+    if (presetName === 'warm') {
+      state.visualCalibration = { temperature: 30, saturation: 125, brightness: 108, contrast: 110 };
+      showToast('Predefinição: Aurora Dourada ☀️');
+    } else if (presetName === 'cool') {
+      state.visualCalibration = { temperature: -30, saturation: 115, brightness: 105, contrast: 120 };
+      showToast('Predefinição: Pleiades Ciano ❄️');
+    } else if (presetName === 'vivid') {
+      state.visualCalibration = { temperature: 10, saturation: 160, brightness: 112, contrast: 125 };
+      showToast('Predefinição: Noosfera Viva 🌈');
+    } else {
+      state.visualCalibration = { temperature: 0, saturation: 100, brightness: 100, contrast: 100 };
+      showToast('Predefinição: Equilíbrio Cósmico 🌐');
+    }
+
+    if (presetButtons) {
+      presetButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-preset') === presetName);
+      });
+    }
+
+    applyVisualCalibration();
+  }
+
+  function resetVisualCalibration() {
+    state.visualCalibration = { temperature: 0, saturation: 100, brightness: 100, contrast: 100 };
+    if (presetButtons) {
+      presetButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-preset') === 'default');
+      });
+    }
+    applyVisualCalibration();
+    showToast('Calibração Restaurada ao Padrão Cósmico ✨');
+  }
+
   // --- EVENT LISTENERS & INICIALIZAÇÃO ---
   function bindEvents() {
     if (playBtn) playBtn.addEventListener('click', toggleAudio);
@@ -846,6 +1030,58 @@
     if (zenBtn) zenBtn.addEventListener('click', toggleZenMode);
     if (shareBtn) shareBtn.addEventListener('click', handleShare);
     if (rainbowBtn) rainbowBtn.addEventListener('click', toggleRainbowBridge);
+
+    // Modal Calibração & Gauges
+    if (gaugeBtn && gaugeModal) {
+      gaugeBtn.addEventListener('click', () => {
+        gaugeModal.classList.add('open');
+        applyVisualCalibration(false);
+      });
+    }
+    if (closeGaugeBtn && gaugeModal) {
+      closeGaugeBtn.addEventListener('click', () => {
+        gaugeModal.classList.remove('open');
+      });
+    }
+    if (resetGaugeBtn) {
+      resetGaugeBtn.addEventListener('click', resetVisualCalibration);
+    }
+
+    // Sliders dos Gauges
+    if (tempSlider) {
+      tempSlider.addEventListener('input', (e) => {
+        state.visualCalibration.temperature = parseFloat(e.target.value);
+        applyVisualCalibration();
+      });
+    }
+    if (satSlider) {
+      satSlider.addEventListener('input', (e) => {
+        state.visualCalibration.saturation = parseFloat(e.target.value);
+        applyVisualCalibration();
+      });
+    }
+    if (briSlider) {
+      briSlider.addEventListener('input', (e) => {
+        state.visualCalibration.brightness = parseFloat(e.target.value);
+        applyVisualCalibration();
+      });
+    }
+    if (conSlider) {
+      conSlider.addEventListener('input', (e) => {
+        state.visualCalibration.contrast = parseFloat(e.target.value);
+        applyVisualCalibration();
+      });
+    }
+
+    // Presets dos Gauges
+    if (presetButtons) {
+      presetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.getAttribute('data-preset');
+          setPreset(preset);
+        });
+      });
+    }
 
     // Modal Bênção
     if (prayerBtn && prayerModal) {
@@ -919,7 +1155,7 @@
     }
 
     // Fechar modais ao clicar fora
-    [prayerModal, kinModal, solfeggioModal].forEach(modal => {
+    [prayerModal, kinModal, solfeggioModal, gaugeModal].forEach(modal => {
       if (modal) {
         modal.addEventListener('click', (e) => {
           if (e.target === modal) modal.classList.remove('open');
@@ -952,8 +1188,10 @@
 
   // --- INICIALIZAÇÃO ---
   document.addEventListener('DOMContentLoaded', () => {
+    loadSavedCalibration();
     initVisualizerSticks();
     initThreeJS();
+    applyVisualCalibration(false);
     initTodayKin();
     bindEvents();
     wakeControls();
