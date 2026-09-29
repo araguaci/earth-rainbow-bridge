@@ -28,6 +28,12 @@
       saturation: 100,  // 0% a 200%
       brightness: 100,  // 50% a 150%
       contrast: 100     // 50% a 160%
+    },
+    harmonicDynamics: {
+      octaCount: 144,      // 72 a 576 (múltiplos harmônicos: 72, 144, 216, 288, 432, 576)
+      octaScale: 100,      // 50% a 250% (escala áurea dos cristais)
+      globeSpeed: 1.0,     // 0.0x a 5.0x (frequência de rotação do globo terrestre)
+      syncHarmonic: true   // aumento harmônico sincronizado (quantidade + tamanho)
     }
   };
 
@@ -136,6 +142,33 @@
   const briState = document.getElementById('gauge-bri-state');
   const conState = document.getElementById('gauge-con-state');
   const presetButtons = document.querySelectorAll('.gauge-preset-btn');
+
+  // Elementos das Abas & Dinâmica Harmônica (Octaedros & Rotação)
+  const tabBtnColor = document.getElementById('btn-tab-color');
+  const tabBtnDynamics = document.getElementById('btn-tab-dynamics');
+  const tabContentColor = document.getElementById('tab-content-color');
+  const tabContentDynamics = document.getElementById('tab-content-dynamics');
+
+  const octaSlider = document.getElementById('gauge-octa-slider');
+  const octaVal = document.getElementById('gauge-octa-val');
+  const octaArc = document.getElementById('gauge-octa-arc');
+  const octaNeedle = document.getElementById('gauge-octa-needle');
+  const octaState = document.getElementById('gauge-octa-state');
+
+  const scaleSlider = document.getElementById('gauge-scale-slider');
+  const scaleVal = document.getElementById('gauge-scale-val');
+  const scaleArc = document.getElementById('gauge-scale-arc');
+  const scaleNeedle = document.getElementById('gauge-scale-needle');
+  const scaleState = document.getElementById('gauge-scale-state');
+
+  const speedSlider = document.getElementById('gauge-speed-slider');
+  const speedVal = document.getElementById('gauge-speed-val');
+  const speedArc = document.getElementById('gauge-speed-arc');
+  const speedNeedle = document.getElementById('gauge-speed-needle');
+  const speedState = document.getElementById('gauge-speed-state');
+
+  const syncHarmonicBtn = document.getElementById('btn-sync-harmonic');
+  const dynamicsPresetButtons = document.querySelectorAll('.dynamics-preset-btn');
 
   // --- AUDIO API & ANALYSER ---
   let audioCtx = null;
@@ -381,8 +414,8 @@
     pulseRingMesh = new THREE.Mesh(ringGeo, ringMat);
     scene.add(pulseRingMesh);
 
-    // Poeira Cósmica em 144 Octaedros Sagrados (Acima: Vermelho & Branco | Abaixo: Azul & Amarelo)
-    const octaCount = 144;
+    // Poeira Cósmica em Octaedros Sagrados (Capacidade máxima 576, Padrão 144)
+    const MAX_OCTA = 576;
     const octaGeo = new THREE.OctahedronGeometry(0.015, 0).toNonIndexed();
     const pos = octaGeo.attributes.position;
     const vertexColors = [];
@@ -421,11 +454,12 @@
       emissiveIntensity: 0.25
     });
 
-    const octaInstancedMesh = new THREE.InstancedMesh(octaGeo, octaMat, octaCount);
+    const octaInstancedMesh = new THREE.InstancedMesh(octaGeo, octaMat, MAX_OCTA);
+    octaInstancedMesh.count = state.harmonicDynamics.octaCount;
     const dummy = new THREE.Object3D();
     const octaData = [];
 
-    for (let i = 0; i < octaCount; i++) {
+    for (let i = 0; i < MAX_OCTA; i++) {
       const radius = 2.1 + Math.random() * 2.9;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos((Math.random() * 2) - 1);
@@ -435,9 +469,10 @@
       const z = radius * Math.cos(phi);
 
       let baseScale;
-      if (i < 55) {
+      const subIdx = i % 144;
+      if (subIdx < 55) {
         baseScale = 0.24 + Math.random() * (0.38 - 0.24);
-      } else if (i < 110) {
+      } else if (subIdx < 110) {
         baseScale = 0.38 + Math.random() * (0.62 - 0.38);
       } else {
         baseScale = 0.62 + Math.random() * (1.00 - 0.62);
@@ -483,7 +518,8 @@
 
       if (globeMesh) {
         if (!isDragging) {
-          globeMesh.rotation.y += rotationVelocity.y;
+          const speedMult = state.harmonicDynamics.globeSpeed;
+          globeMesh.rotation.y += rotationVelocity.y * speedMult;
           globeMesh.rotation.x += (targetRotation.x - globeMesh.rotation.x) * 0.05;
         }
         if (atmosphereMesh) {
@@ -513,7 +549,11 @@
       }
 
       if (octaInstancedMesh && octaData.length > 0) {
-        for (let i = 0; i < octaCount; i++) {
+        const activeCount = Math.min(octaData.length, state.harmonicDynamics.octaCount);
+        octaInstancedMesh.count = activeCount;
+        const scaleMult = state.harmonicDynamics.octaScale / 100;
+
+        for (let i = 0; i < activeCount; i++) {
           const item = octaData[i];
           item.theta += item.orbitSpeed;
           
@@ -526,7 +566,7 @@
           item.rotation.z += item.rotSpeed.z;
 
           const harmonicPulse = Math.sin(clock * 3.5 * item.pulseFreq + item.pulsePhase) * 0.08;
-          const currentScale = Math.min(1.0, Math.max(0.24, item.baseScale * (1.0 + harmonicPulse + audioBoost)));
+          const currentScale = Math.min(3.5, Math.max(0.12, item.baseScale * scaleMult * (1.0 + harmonicPulse + audioBoost)));
 
           dummy.position.copy(item.position);
           dummy.rotation.copy(item.rotation);
@@ -861,16 +901,24 @@
 
   function loadSavedCalibration() {
     try {
-      const saved = localStorage.getItem('gaia_visual_calibration');
-      if (saved) {
-        const parsed = JSON.parse(saved);
+      const savedVisual = localStorage.getItem('gaia_visual_calibration');
+      if (savedVisual) {
+        const parsed = JSON.parse(savedVisual);
         if (typeof parsed.temperature === 'number') state.visualCalibration.temperature = parsed.temperature;
         if (typeof parsed.saturation === 'number') state.visualCalibration.saturation = parsed.saturation;
         if (typeof parsed.brightness === 'number') state.visualCalibration.brightness = parsed.brightness;
         if (typeof parsed.contrast === 'number') state.visualCalibration.contrast = parsed.contrast;
       }
+      const savedDynamics = localStorage.getItem('gaia_dynamics_calibration');
+      if (savedDynamics) {
+        const parsedD = JSON.parse(savedDynamics);
+        if (typeof parsedD.octaCount === 'number') state.harmonicDynamics.octaCount = parsedD.octaCount;
+        if (typeof parsedD.octaScale === 'number') state.harmonicDynamics.octaScale = parsedD.octaScale;
+        if (typeof parsedD.globeSpeed === 'number') state.harmonicDynamics.globeSpeed = parsedD.globeSpeed;
+        if (typeof parsedD.syncHarmonic === 'boolean') state.harmonicDynamics.syncHarmonic = parsedD.syncHarmonic;
+      }
     } catch (e) {
-      console.warn('Erro ao carregar calibração visual:', e);
+      console.warn('Erro ao carregar calibração visual/dinâmica:', e);
     }
   }
 
@@ -916,7 +964,6 @@
     }
 
     // 3. Atualizar Indicadores dos Gauges
-    // Gauge 1: Temperatura (-50 a +50)
     const pTemp = Math.max(0, Math.min(1, (temperature + 50) / 100));
     if (tempArc) tempArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pTemp)).toFixed(1);
     if (tempNeedle) tempNeedle.style.transform = `rotate(${((pTemp - 0.5) * 180).toFixed(1)}deg)`;
@@ -929,7 +976,6 @@
       tempState.textContent = temperature < -15 ? '❄️ Fria (Azul)' : temperature > 15 ? '☀️ Quente (Ouro)' : '✨ Neutro Cósmico';
     }
 
-    // Gauge 2: Saturação (0 a 200)
     const pSat = Math.max(0, Math.min(1, saturation / 200));
     if (satArc) satArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pSat)).toFixed(1);
     if (satNeedle) satNeedle.style.transform = `rotate(${((pSat - 0.5) * 180).toFixed(1)}deg)`;
@@ -939,7 +985,6 @@
       satState.textContent = saturation < 25 ? 'Monocromático' : saturation > 140 ? 'Hiper Cósmico' : 'Cores Vivas';
     }
 
-    // Gauge 3: Brilho (50 a 150)
     const pBri = Math.max(0, Math.min(1, (brightness - 50) / 100));
     if (briArc) briArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pBri)).toFixed(1);
     if (briNeedle) briNeedle.style.transform = `rotate(${((pBri - 0.5) * 180).toFixed(1)}deg)`;
@@ -949,7 +994,6 @@
       briState.textContent = brightness < 80 ? 'Penumbra Cósmica' : brightness > 120 ? 'Radiação Solar' : 'Equilíbrio Óptico';
     }
 
-    // Gauge 4: Contraste (50 a 160)
     const pCon = Math.max(0, Math.min(1, (contrast - 50) / 110));
     if (conArc) conArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pCon)).toFixed(1);
     if (conNeedle) conNeedle.style.transform = `rotate(${((pCon - 0.5) * 180).toFixed(1)}deg)`;
@@ -963,6 +1007,75 @@
     if (save) {
       try {
         localStorage.setItem('gaia_visual_calibration', JSON.stringify(state.visualCalibration));
+      } catch (e) {}
+    }
+  }
+
+  function applyHarmonicDynamics(save = true) {
+    const { octaCount, octaScale, globeSpeed, syncHarmonic } = state.harmonicDynamics;
+
+    // 1. Atualizar contagem no Three.js
+    if (particlesMesh) {
+      particlesMesh.count = Math.min(576, octaCount);
+    }
+
+    // 2. Gauge Quantidade de Octaedros (72 a 576)
+    const pOcta = Math.max(0, Math.min(1, (octaCount - 72) / (576 - 72)));
+    if (octaArc) octaArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pOcta)).toFixed(1);
+    if (octaNeedle) octaNeedle.style.transform = `rotate(${((pOcta - 0.5) * 180).toFixed(1)}deg)`;
+    if (octaSlider && document.activeElement !== octaSlider) octaSlider.value = octaCount;
+    if (octaVal) octaVal.textContent = `${octaCount} Cristais`;
+    if (octaState) {
+      octaState.textContent = octaCount === 144 ? '✨ Padrão Sagrado 144'
+        : octaCount === 432 ? '🎵 Frequência Cósmica 432'
+        : octaCount === 288 ? '💎 Duplo Harmônico 288'
+        : octaCount === 576 ? '🌌 Matriz Quântica 576'
+        : octaCount < 100 ? '🌱 Sub-Harmônico 72'
+        : 'Harmônico Ativo';
+    }
+
+    // 3. Gauge Escala / Tamanho (50 a 250)
+    const pScale = Math.max(0, Math.min(1, (octaScale - 50) / (250 - 50)));
+    if (scaleArc) scaleArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pScale)).toFixed(1);
+    if (scaleNeedle) scaleNeedle.style.transform = `rotate(${((pScale - 0.5) * 180).toFixed(1)}deg)`;
+    if (scaleSlider && document.activeElement !== scaleSlider) scaleSlider.value = octaScale;
+    if (scaleVal) scaleVal.textContent = `${Math.round(octaScale)}%`;
+    if (scaleState) {
+      scaleState.textContent = octaScale === 100 ? '📐 Proporção Áurea'
+        : octaScale > 160 ? '💎 Macro Portais de Luz'
+        : octaScale < 75 ? '✨ Poeira Estelar Fina'
+        : 'Dimensão Harmônica';
+    }
+
+    // 4. Gauge Rotação do Globo (0.0 a 5.0)
+    const pSpeed = Math.max(0, Math.min(1, globeSpeed / 5.0));
+    if (speedArc) speedArc.style.strokeDashoffset = (ARC_LENGTH * (1 - pSpeed)).toFixed(1);
+    if (speedNeedle) speedNeedle.style.transform = `rotate(${((pSpeed - 0.5) * 180).toFixed(1)}deg)`;
+    if (speedSlider && document.activeElement !== speedSlider) speedSlider.value = globeSpeed;
+    if (speedVal) speedVal.textContent = `${globeSpeed.toFixed(1)}x`;
+    if (speedState) {
+      speedState.textContent = globeSpeed === 0 ? '⏸️ Pausa Contemplativa'
+        : globeSpeed === 1.0 ? '🪐 Órbita Natural (1.0x)'
+        : globeSpeed > 2.5 ? '⚡ Vórtice Acelerado'
+        : globeSpeed < 0.6 ? '🧘 Meditação Serena'
+        : 'Rotação Harmônica';
+    }
+
+    // 5. Botão de Sincronização Harmônica
+    if (syncHarmonicBtn) {
+      syncHarmonicBtn.classList.toggle('active', syncHarmonic);
+      const span = syncHarmonicBtn.querySelector('span');
+      if (span) {
+        span.textContent = syncHarmonic
+          ? 'Aumento Harmônico Sincronizado Ativo (Quantidade + Tamanho)'
+          : 'Aumento Harmônico Desvinculado (Ajuste Independente)';
+      }
+    }
+
+    // 6. Salvar
+    if (save) {
+      try {
+        localStorage.setItem('gaia_dynamics_calibration', JSON.stringify(state.harmonicDynamics));
       } catch (e) {}
     }
   }
@@ -991,14 +1104,67 @@
     applyVisualCalibration();
   }
 
+  function setDynamicsPreset(presetName) {
+    if (presetName === 'vortex432') {
+      state.harmonicDynamics.octaCount = 432;
+      state.harmonicDynamics.octaScale = 145;
+      state.harmonicDynamics.globeSpeed = 2.2;
+      showToast('Predefinição: Vórtice 432Hz 🌪️');
+    } else if (presetName === 'matrix576') {
+      state.harmonicDynamics.octaCount = 576;
+      state.harmonicDynamics.octaScale = 180;
+      state.harmonicDynamics.globeSpeed = 1.6;
+      showToast('Predefinição: Constelação 576 🌌');
+    } else if (presetName === 'zen') {
+      state.harmonicDynamics.octaCount = 144;
+      state.harmonicDynamics.octaScale = 110;
+      state.harmonicDynamics.globeSpeed = 0.2;
+      showToast('Predefinição: Contemplação Zen 🧘');
+    } else {
+      state.harmonicDynamics.octaCount = 144;
+      state.harmonicDynamics.octaScale = 100;
+      state.harmonicDynamics.globeSpeed = 1.0;
+      showToast('Predefinição: Órbita Sagrada (144) 🪐');
+    }
+
+    if (dynamicsPresetButtons) {
+      dynamicsPresetButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-dyn-preset') === presetName);
+      });
+    }
+
+    applyHarmonicDynamics();
+  }
+
+  function switchGaugeTab(tabName) {
+    const isColor = tabName === 'tab-color';
+    if (tabBtnColor) {
+      tabBtnColor.classList.toggle('active', isColor);
+      tabBtnColor.setAttribute('aria-selected', isColor ? 'true' : 'false');
+    }
+    if (tabBtnDynamics) {
+      tabBtnDynamics.classList.toggle('active', !isColor);
+      tabBtnDynamics.setAttribute('aria-selected', !isColor ? 'true' : 'false');
+    }
+    if (tabContentColor) tabContentColor.classList.toggle('active', isColor);
+    if (tabContentDynamics) tabContentDynamics.classList.toggle('active', !isColor);
+  }
+
   function resetVisualCalibration() {
     state.visualCalibration = { temperature: 0, saturation: 100, brightness: 100, contrast: 100 };
+    state.harmonicDynamics = { octaCount: 144, octaScale: 100, globeSpeed: 1.0, syncHarmonic: true };
     if (presetButtons) {
       presetButtons.forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-preset') === 'default');
       });
     }
+    if (dynamicsPresetButtons) {
+      dynamicsPresetButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-dyn-preset') === 'default');
+      });
+    }
     applyVisualCalibration();
+    applyHarmonicDynamics();
     showToast('Calibração Restaurada ao Padrão Cósmico ✨');
   }
 
@@ -1036,6 +1202,7 @@
       gaugeBtn.addEventListener('click', () => {
         gaugeModal.classList.add('open');
         applyVisualCalibration(false);
+        applyHarmonicDynamics(false);
       });
     }
     if (closeGaugeBtn && gaugeModal) {
@@ -1047,7 +1214,15 @@
       resetGaugeBtn.addEventListener('click', resetVisualCalibration);
     }
 
-    // Sliders dos Gauges
+    // Abas de Navegação
+    if (tabBtnColor) {
+      tabBtnColor.addEventListener('click', () => switchGaugeTab('tab-color'));
+    }
+    if (tabBtnDynamics) {
+      tabBtnDynamics.addEventListener('click', () => switchGaugeTab('tab-dynamics'));
+    }
+
+    // Sliders dos Gauges de Luz
     if (tempSlider) {
       tempSlider.addEventListener('input', (e) => {
         state.visualCalibration.temperature = parseFloat(e.target.value);
@@ -1073,12 +1248,57 @@
       });
     }
 
-    // Presets dos Gauges
+    // Sliders dos Gauges de Geometria & Rotação
+    if (octaSlider) {
+      octaSlider.addEventListener('input', (e) => {
+        const count = parseInt(e.target.value);
+        state.harmonicDynamics.octaCount = count;
+        if (state.harmonicDynamics.syncHarmonic) {
+          // Aumento harmônico sincronizado (70% a 180%)
+          const r = (count - 72) / (576 - 72);
+          state.harmonicDynamics.octaScale = Math.round(75 + r * 115);
+        }
+        applyHarmonicDynamics();
+      });
+    }
+    if (scaleSlider) {
+      scaleSlider.addEventListener('input', (e) => {
+        state.harmonicDynamics.octaScale = parseFloat(e.target.value);
+        applyHarmonicDynamics();
+      });
+    }
+    if (speedSlider) {
+      speedSlider.addEventListener('input', (e) => {
+        state.harmonicDynamics.globeSpeed = parseFloat(e.target.value);
+        applyHarmonicDynamics();
+      });
+    }
+
+    // Botão Sincronização Harmônica
+    if (syncHarmonicBtn) {
+      syncHarmonicBtn.addEventListener('click', () => {
+        state.harmonicDynamics.syncHarmonic = !state.harmonicDynamics.syncHarmonic;
+        applyHarmonicDynamics();
+        showToast(state.harmonicDynamics.syncHarmonic ? 'Sincronização Harmônica Ativada ✨' : 'Ajustes Desvinculados (Independente)');
+      });
+    }
+
+    // Presets dos Gauges de Luz
     if (presetButtons) {
       presetButtons.forEach(btn => {
         btn.addEventListener('click', () => {
           const preset = btn.getAttribute('data-preset');
           setPreset(preset);
+        });
+      });
+    }
+
+    // Presets dos Gauges de Dinâmica
+    if (dynamicsPresetButtons) {
+      dynamicsPresetButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const preset = btn.getAttribute('data-dyn-preset');
+          setDynamicsPreset(preset);
         });
       });
     }
@@ -1192,6 +1412,7 @@
     initVisualizerSticks();
     initThreeJS();
     applyVisualCalibration(false);
+    applyHarmonicDynamics(false);
     initTodayKin();
     bindEvents();
     wakeControls();

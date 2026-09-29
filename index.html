@@ -291,120 +291,232 @@
             </button>
             <div class="modal-header">
                 <div class="modal-icon"><i class="fas fa-gauge-high"></i></div>
-                <h2 id="modal-gauge-title" class="modal-title">Calibração de Cor & Luz</h2>
-                <div class="modal-subtitle">Temperatura Cósmica, Saturação & Exposição de Gaia</div>
+                <h2 id="modal-gauge-title" class="modal-title">Calibração & Harmônicos de Gaia</h2>
+                <div class="modal-subtitle">Cor, Iluminação, Geometria Sagrada & Rotação Orbital</div>
             </div>
 
-            <div class="gauges-dashboard">
-                <!-- Gauge 1: Temperatura de Cor -->
-                <div class="gauge-card">
-                    <div class="gauge-card-header">
-                        <i class="fas fa-temperature-half gauge-card-icon"></i>
-                        <span class="gauge-card-title">Temperatura de Cor</span>
-                    </div>
-                    <div class="gauge-meter-wrapper">
-                        <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
-                            <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
-                            <path class="gauge-progress gauge-temp-progress" id="gauge-temp-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
-                            <line class="gauge-needle" id="gauge-temp-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
-                            <circle cx="60" cy="65" r="5" class="gauge-pivot" />
-                        </svg>
-                        <div class="gauge-digital-val" id="gauge-temp-val">6500 K</div>
-                        <div class="gauge-state-badge" id="gauge-temp-state">Neutro Cósmico</div>
-                    </div>
-                    <div class="gauge-slider-container">
-                        <div class="gauge-range-labels">
-                            <span>❄️ Fria (Azul)</span>
-                            <span>☀️ Quente (Ouro)</span>
+            <!-- Abas de Navegação -->
+            <div class="modal-tabs-nav" role="tablist">
+                <button class="modal-tab-btn active" id="btn-tab-color" data-tab="tab-color" role="tab" aria-selected="true">
+                    <i class="fas fa-palette"></i>
+                    <span>Cor & Iluminação</span>
+                </button>
+                <button class="modal-tab-btn" id="btn-tab-dynamics" data-tab="tab-dynamics" role="tab" aria-selected="false">
+                    <i class="fas fa-atom"></i>
+                    <span>Geometria & Rotação</span>
+                </button>
+            </div>
+
+            <!-- Aba 1: Cor & Iluminação -->
+            <div id="tab-content-color" class="modal-tab-content active" role="tabpanel">
+                <div class="gauges-dashboard">
+                    <!-- Gauge 1: Temperatura de Cor -->
+                    <div class="gauge-card">
+                        <div class="gauge-card-header">
+                            <i class="fas fa-temperature-half gauge-card-icon"></i>
+                            <span class="gauge-card-title">Temperatura de Cor</span>
                         </div>
-                        <input type="range" id="gauge-temp-slider" class="gauge-slider gauge-slider-temp" min="-50" max="50" step="1" value="0" aria-label="Temperatura de Cor">
+                        <div class="gauge-meter-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
+                                <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <path class="gauge-progress gauge-temp-progress" id="gauge-temp-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <line class="gauge-needle" id="gauge-temp-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="60" cy="65" r="5" class="gauge-pivot" />
+                            </svg>
+                            <div class="gauge-digital-val" id="gauge-temp-val">6500 K</div>
+                            <div class="gauge-state-badge" id="gauge-temp-state">Neutro Cósmico</div>
+                        </div>
+                        <div class="gauge-slider-container">
+                            <div class="gauge-range-labels">
+                                <span>❄️ Fria (Azul)</span>
+                                <span>☀️ Quente (Ouro)</span>
+                            </div>
+                            <input type="range" id="gauge-temp-slider" class="gauge-slider gauge-slider-temp" min="-50" max="50" step="1" value="0" aria-label="Temperatura de Cor">
+                        </div>
+                    </div>
+
+                    <!-- Gauge 2: Intensidade de Cor (Saturação) -->
+                    <div class="gauge-card">
+                        <div class="gauge-card-header">
+                            <i class="fas fa-palette gauge-card-icon"></i>
+                            <span class="gauge-card-title">Intensidade / Saturação</span>
+                        </div>
+                        <div class="gauge-meter-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
+                                <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <path class="gauge-progress gauge-sat-progress" id="gauge-sat-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <line class="gauge-needle" id="gauge-sat-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="60" cy="65" r="5" class="gauge-pivot" />
+                            </svg>
+                            <div class="gauge-digital-val" id="gauge-sat-val">100%</div>
+                            <div class="gauge-state-badge" id="gauge-sat-state">Cores Vivas</div>
+                        </div>
+                        <div class="gauge-slider-container">
+                            <div class="gauge-range-labels">
+                                <span>0% P&B</span>
+                                <span>200% Cósmico</span>
+                            </div>
+                            <input type="range" id="gauge-sat-slider" class="gauge-slider gauge-slider-sat" min="0" max="200" step="2" value="100" aria-label="Intensidade e Saturação">
+                        </div>
+                    </div>
+
+                    <!-- Gauge 3: Brilho & Exposição -->
+                    <div class="gauge-card">
+                        <div class="gauge-card-header">
+                            <i class="fas fa-sun gauge-card-icon"></i>
+                            <span class="gauge-card-title">Brilho & Exposição</span>
+                        </div>
+                        <div class="gauge-meter-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
+                                <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <path class="gauge-progress gauge-bri-progress" id="gauge-bri-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <line class="gauge-needle" id="gauge-bri-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="60" cy="65" r="5" class="gauge-pivot" />
+                            </svg>
+                            <div class="gauge-digital-val" id="gauge-bri-val">100%</div>
+                            <div class="gauge-state-badge" id="gauge-bri-state">Equilíbrio Óptico</div>
+                        </div>
+                        <div class="gauge-slider-container">
+                            <div class="gauge-range-labels">
+                                <span>50% Penumbra</span>
+                                <span>150% Solar</span>
+                            </div>
+                            <input type="range" id="gauge-bri-slider" class="gauge-slider gauge-slider-bri" min="50" max="150" step="1" value="100" aria-label="Brilho e Exposição">
+                        </div>
+                    </div>
+
+                    <!-- Gauge 4: Contraste & Definição -->
+                    <div class="gauge-card">
+                        <div class="gauge-card-header">
+                            <i class="fas fa-circle-half-stroke gauge-card-icon"></i>
+                            <span class="gauge-card-title">Contraste & Nitidez</span>
+                        </div>
+                        <div class="gauge-meter-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
+                                <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <path class="gauge-progress gauge-con-progress" id="gauge-con-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <line class="gauge-needle" id="gauge-con-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="60" cy="65" r="5" class="gauge-pivot" />
+                            </svg>
+                            <div class="gauge-digital-val" id="gauge-con-val">100%</div>
+                            <div class="gauge-state-badge" id="gauge-con-state">Definição Suave</div>
+                        </div>
+                        <div class="gauge-slider-container">
+                            <div class="gauge-range-labels">
+                                <span>50% Etéreo</span>
+                                <span>160% Profundo</span>
+                            </div>
+                            <input type="range" id="gauge-con-slider" class="gauge-slider gauge-slider-con" min="50" max="160" step="1" value="100" aria-label="Contraste e Nitidez">
+                        </div>
                     </div>
                 </div>
 
-                <!-- Gauge 2: Intensidade de Cor (Saturação) -->
-                <div class="gauge-card">
-                    <div class="gauge-card-header">
-                        <i class="fas fa-palette gauge-card-icon"></i>
-                        <span class="gauge-card-title">Intensidade / Saturação</span>
-                    </div>
-                    <div class="gauge-meter-wrapper">
-                        <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
-                            <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
-                            <path class="gauge-progress gauge-sat-progress" id="gauge-sat-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
-                            <line class="gauge-needle" id="gauge-sat-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
-                            <circle cx="60" cy="65" r="5" class="gauge-pivot" />
-                        </svg>
-                        <div class="gauge-digital-val" id="gauge-sat-val">100%</div>
-                        <div class="gauge-state-badge" id="gauge-sat-state">Cores Vivas</div>
-                    </div>
-                    <div class="gauge-slider-container">
-                        <div class="gauge-range-labels">
-                            <span>0% P&B</span>
-                            <span>200% Cósmico</span>
-                        </div>
-                        <input type="range" id="gauge-sat-slider" class="gauge-slider gauge-slider-sat" min="0" max="200" step="2" value="100" aria-label="Intensidade e Saturação">
-                    </div>
-                </div>
-
-                <!-- Gauge 3: Brilho & Exposição -->
-                <div class="gauge-card">
-                    <div class="gauge-card-header">
-                        <i class="fas fa-sun gauge-card-icon"></i>
-                        <span class="gauge-card-title">Brilho & Exposição</span>
-                    </div>
-                    <div class="gauge-meter-wrapper">
-                        <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
-                            <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
-                            <path class="gauge-progress gauge-bri-progress" id="gauge-bri-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
-                            <line class="gauge-needle" id="gauge-bri-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
-                            <circle cx="60" cy="65" r="5" class="gauge-pivot" />
-                        </svg>
-                        <div class="gauge-digital-val" id="gauge-bri-val">100%</div>
-                        <div class="gauge-state-badge" id="gauge-bri-state">Equilíbrio Óptico</div>
-                    </div>
-                    <div class="gauge-slider-container">
-                        <div class="gauge-range-labels">
-                            <span>50% Penumbra</span>
-                            <span>150% Solar</span>
-                        </div>
-                        <input type="range" id="gauge-bri-slider" class="gauge-slider gauge-slider-bri" min="50" max="150" step="1" value="100" aria-label="Brilho e Exposição">
-                    </div>
-                </div>
-
-                <!-- Gauge 4: Contraste & Definição -->
-                <div class="gauge-card">
-                    <div class="gauge-card-header">
-                        <i class="fas fa-circle-half-stroke gauge-card-icon"></i>
-                        <span class="gauge-card-title">Contraste & Nitidez</span>
-                    </div>
-                    <div class="gauge-meter-wrapper">
-                        <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
-                            <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
-                            <path class="gauge-progress gauge-con-progress" id="gauge-con-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
-                            <line class="gauge-needle" id="gauge-con-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
-                            <circle cx="60" cy="65" r="5" class="gauge-pivot" />
-                        </svg>
-                        <div class="gauge-digital-val" id="gauge-con-val">100%</div>
-                        <div class="gauge-state-badge" id="gauge-con-state">Definição Suave</div>
-                    </div>
-                    <div class="gauge-slider-container">
-                        <div class="gauge-range-labels">
-                            <span>50% Etéreo</span>
-                            <span>160% Profundo</span>
-                        </div>
-                        <input type="range" id="gauge-con-slider" class="gauge-slider gauge-slider-con" min="50" max="160" step="1" value="100" aria-label="Contraste e Nitidez">
+                <!-- Presets de Luz -->
+                <div class="gauge-presets-section">
+                    <span class="preset-label">Predefinições de Luz:</span>
+                    <div class="preset-buttons-row">
+                        <button class="gauge-preset-btn active" data-preset="default">Equilíbrio Cósmico</button>
+                        <button class="gauge-preset-btn" data-preset="warm">Aurora Dourada</button>
+                        <button class="gauge-preset-btn" data-preset="cool">Pleiades Ciano</button>
+                        <button class="gauge-preset-btn" data-preset="vivid">Noosfera Viva</button>
                     </div>
                 </div>
             </div>
 
-            <!-- Presets Rápidos -->
-            <div class="gauge-presets-section">
-                <span class="preset-label">Predefinições de Luz:</span>
-                <div class="preset-buttons-row">
-                    <button class="gauge-preset-btn active" data-preset="default">Equilíbrio Cósmico</button>
-                    <button class="gauge-preset-btn" data-preset="warm">Aurora Dourada</button>
-                    <button class="gauge-preset-btn" data-preset="cool">Pleiades Ciano</button>
-                    <button class="gauge-preset-btn" data-preset="vivid">Noosfera Viva</button>
+            <!-- Aba 2: Geometria Sagrada & Rotação -->
+            <div id="tab-content-dynamics" class="modal-tab-content" role="tabpanel">
+                <div class="gauges-dashboard gauges-dashboard-3">
+                    <!-- Gauge 5: Quantidade de Octaedros -->
+                    <div class="gauge-card">
+                        <div class="gauge-card-header">
+                            <i class="fas fa-shapes gauge-card-icon"></i>
+                            <span class="gauge-card-title">Campo de Octaedros</span>
+                        </div>
+                        <div class="gauge-meter-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
+                                <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <path class="gauge-progress gauge-octa-progress" id="gauge-octa-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <line class="gauge-needle" id="gauge-octa-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="60" cy="65" r="5" class="gauge-pivot" />
+                            </svg>
+                            <div class="gauge-digital-val" id="gauge-octa-val">144 Cristais</div>
+                            <div class="gauge-state-badge" id="gauge-octa-state">Padrão Sagrado 144</div>
+                        </div>
+                        <div class="gauge-slider-container">
+                            <div class="gauge-range-labels">
+                                <span>72 Sub-Harmônico</span>
+                                <span>576 Matriz</span>
+                            </div>
+                            <input type="range" id="gauge-octa-slider" class="gauge-slider gauge-slider-octa" min="72" max="576" step="18" value="144" aria-label="Quantidade de Octaedros">
+                        </div>
+                    </div>
+
+                    <!-- Gauge 6: Escala / Tamanho dos Cristais -->
+                    <div class="gauge-card">
+                        <div class="gauge-card-header">
+                            <i class="fas fa-up-right-and-down-left-from-center gauge-card-icon"></i>
+                            <span class="gauge-card-title">Escala dos Cristais</span>
+                        </div>
+                        <div class="gauge-meter-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
+                                <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <path class="gauge-progress gauge-scale-progress" id="gauge-scale-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <line class="gauge-needle" id="gauge-scale-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="60" cy="65" r="5" class="gauge-pivot" />
+                            </svg>
+                            <div class="gauge-digital-val" id="gauge-scale-val">100%</div>
+                            <div class="gauge-state-badge" id="gauge-scale-state">Proporção Áurea</div>
+                        </div>
+                        <div class="gauge-slider-container">
+                            <div class="gauge-range-labels">
+                                <span>50% Micro Pó</span>
+                                <span>250% Macro Portais</span>
+                            </div>
+                            <input type="range" id="gauge-scale-slider" class="gauge-slider gauge-slider-scale" min="50" max="250" step="5" value="100" aria-label="Tamanho dos Octaedros">
+                        </div>
+                    </div>
+
+                    <!-- Gauge 7: Frequência de Rotação do Globo -->
+                    <div class="gauge-card">
+                        <div class="gauge-card-header">
+                            <i class="fas fa-rotate gauge-card-icon"></i>
+                            <span class="gauge-card-title">Rotação do Globo</span>
+                        </div>
+                        <div class="gauge-meter-wrapper">
+                            <svg class="gauge-svg" viewBox="0 0 120 75" aria-hidden="true">
+                                <path class="gauge-track" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <path class="gauge-progress gauge-speed-progress" id="gauge-speed-arc" d="M 15,65 A 45,45 0 0,1 105,65" fill="none" stroke-width="8" stroke-linecap="round" />
+                                <line class="gauge-needle" id="gauge-speed-needle" x1="60" y1="65" x2="60" y2="28" stroke-width="3" stroke-linecap="round" />
+                                <circle cx="60" cy="65" r="5" class="gauge-pivot" />
+                            </svg>
+                            <div class="gauge-digital-val" id="gauge-speed-val">1.0x</div>
+                            <div class="gauge-state-badge" id="gauge-speed-state">Órbita Natural (1.0x)</div>
+                        </div>
+                        <div class="gauge-slider-container">
+                            <div class="gauge-range-labels">
+                                <span>0.0x Pausa Zen</span>
+                                <span>5.0x Vórtice</span>
+                            </div>
+                            <input type="range" id="gauge-speed-slider" class="gauge-slider gauge-slider-speed" min="0" max="5" step="0.1" value="1.0" aria-label="Velocidade de Rotação do Globo">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botão de Sincronização Harmônica (Quantidade + Tamanho) -->
+                <button id="btn-sync-harmonic" class="harmonic-sync-btn active" title="Quando ativo, aumentar a quantidade escala proporcionalmente o tamanho dos cristais">
+                    <i class="fas fa-link"></i>
+                    <span>Aumento Harmônico Sincronizado Ativo (Quantidade + Tamanho)</span>
+                </button>
+
+                <!-- Presets de Dinâmica -->
+                <div class="gauge-presets-section">
+                    <span class="preset-label">Predefinições de Geometria & Rotação:</span>
+                    <div class="preset-buttons-row">
+                        <button class="dynamics-preset-btn active" data-dyn-preset="default">Órbita Sagrada (144)</button>
+                        <button class="dynamics-preset-btn" data-dyn-preset="vortex432">Vórtice 432Hz</button>
+                        <button class="dynamics-preset-btn" data-dyn-preset="matrix576">Constelação 576</button>
+                        <button class="dynamics-preset-btn" data-dyn-preset="zen">Contemplação Zen</button>
+                    </div>
                 </div>
             </div>
 

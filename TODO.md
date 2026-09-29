@@ -55,6 +55,13 @@ A comunidade e os guardiões do planeta são convidados a propor novas frequênc
   - [x] 4 Gauges dinâmicos (SVG) com agulha e arco luminoso: Temperatura de Cor (3.000K–9.000K), Intensidade/Saturação (0%–200%), Brilho/Exposição (50%–150%) e Contraste/Nitidez (50%–160%).
   - [x] Integração simultânea com pós-processamento do Canvas e iluminação/exposição Three.js (WebGL).
   - [x] Predefinições cósmicas rápidas (*Aurora Dourada, Pleiades Ciano, Noosfera Viva, Equilíbrio Cósmico*), persistência local e restauração com um clique.
+- [x] **Geometria Sagrada Dinâmica & Frequência de Rotação de Gaia:**
+  - [x] Abas de navegação no painel de calibração (*Cor & Iluminação* vs *Geometria & Rotação*).
+  - [x] **Gauge de Quantidade de Octaedros:** Escala harmônica de 72 a 576 cristais em múltiplos sagrados (72, 144, 216, 288, 432, 576) preservando a distribuição de Fibonacci.
+  - [x] **Gauge de Dimensão dos Cristais:** Modulação áurea de tamanho de 50% (micro pó estelar) a 250% (macro portais luminosos).
+  - [x] **Aumento Harmônico Sincronizado:** Botão de acoplamento que sincroniza automaticamente quantidade e tamanho em proporções estéticas ideais.
+  - [x] **Gauge de Rotação Orbital de Gaia:** Frequência de 0.0x (pausa contemplativa) até 5.0x (vórtice cósmico acelerado), com padrão 1.0x em tempo real no Three.js.
+  - [x] Predefinições dinâmicas rápidas (*Órbita Sagrada 144, Vórtice 432Hz, Constelação 576, Contemplação Zen*).
 - [x] **Compartilhamento Inteligente:**
   - [x] Web Share API nativa com fallback para cópia rápida com feedback.
 
